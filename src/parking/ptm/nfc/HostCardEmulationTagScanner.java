@@ -39,6 +39,7 @@ public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 				}
 				finally {
 					waitForCardAbsent();
+					card.disconnect(true);
 				}
 			}
 			catch (CardException e) {

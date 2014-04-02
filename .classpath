@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="C:/Users/Felipe/Downloads/commons-codec-1.9-bin/commons-codec-1.9/commons-codec-1.9.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Felipe/Downloads/slf4j-1.7.6/slf4j-1.7.6/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Felipe/Downloads/slf4j-1.7.6/slf4j-1.7.6/slf4j-simple-1.7.6.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/nfctools-examples"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

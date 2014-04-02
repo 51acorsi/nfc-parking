@@ -13,6 +13,7 @@ public class EntryPTM extends ParkingTicketMachine {
 	public void Initialize() {
 		HostCardEmulationTagScanner tagScanner = new HostCardEmulationTagScanner(this.cardTerminal);
 		
+		tagScanner.run();	
 	}
 
 	@Override
