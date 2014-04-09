@@ -9,13 +9,19 @@ public class ExitPTM extends ParkingTicketMachine{
 	}
 
 	@Override
-	public void Initialize() {
+	public void initialize() {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void Stop() {
+	public void stop() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void run() {
 		// TODO Auto-generated method stub
 		
 	}

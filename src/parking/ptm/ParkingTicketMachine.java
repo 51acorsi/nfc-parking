@@ -2,10 +2,12 @@ package parking.ptm;
 
 import javax.smartcardio.CardTerminal;
 
-public abstract class ParkingTicketMachine {
+import org.nfctools.spi.acs.AbstractTerminalTagScanner;
 
-	protected CardTerminal cardTerminal;
+public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
+
 	protected BoomGate boomGate;
+	protected boolean interrupted;
 	
 	public enum PTMMode {
 		 ENTRY,
@@ -14,13 +16,13 @@ public abstract class ParkingTicketMachine {
 	
 	public ParkingTicketMachine (CardTerminal cardTerminal)
 	{
-		this.cardTerminal = cardTerminal;
+		super(cardTerminal);		
 		boomGate = new BoomGate();
-		
+		interrupted = false;		
 	}
 	
-	public abstract void Initialize ();
+	public abstract void initialize ();
 	
-	public abstract void Stop();
+	public abstract void stop();
 	
 }
