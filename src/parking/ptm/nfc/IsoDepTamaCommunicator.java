@@ -13,6 +13,8 @@ import org.nfctools.spi.tama.response.InListPassiveTargetResp;
 import org.nfctools.utils.NfcUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import parking.exception.UserIdNotFound;
 import parking.protocol.SWProtocol;
 
 public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
@@ -21,6 +23,9 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 	private int messageCounter = 0;
 	private static final byte[] CLA_INS_P1_P2 = { 0x00, (byte)0xA4, 0x04, 0x00 };
 	private static final byte[] AID_ANDROID = { (byte)0xF0, 0x01, 0x02, 0x03, 0x04, 0x05, 0x07 };
+	private InListPassiveTargetResp inListPassiveTargetResp;
+	
+	private boolean interrupted = false;
 
 	public IsoDepTamaCommunicator(ByteArrayReader reader, ByteArrayWriter writer) {
 		super(reader, writer);
@@ -36,8 +41,8 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 	}
 
 	public void connectAsInitiator() throws IOException {
-		while (true) {
-			InListPassiveTargetResp inListPassiveTargetResp = sendMessage(new InListPassiveTargetReq((byte)1, (byte)0,
+		while (!this.interrupted) {
+			inListPassiveTargetResp = sendMessage(new InListPassiveTargetReq((byte)1, (byte)0,
 					new byte[0]));
 			if (inListPassiveTargetResp.getNumberOfTargets() > 0) {
 				log.info("TargetData: " + NfcUtils.convertBinToASCII(inListPassiveTargetResp.getTargetData()));
@@ -48,9 +53,7 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 					authApplicationID(inListPassiveTargetResp);
 					log.info("App ID authenticated");
 					
-					log.info("Authenticating user ID");
-					int uId = getUserId (inListPassiveTargetResp);
-					log.info("User ID: " + uId);
+					return;
 				}
 				else {
 					log.info("IsoDep NOT Supported");
@@ -67,6 +70,11 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 			}
 		}
 	}
+	
+	public void stop()
+	{
+		this.interrupted = true;
+	}
 
 	private void authApplicationID(InListPassiveTargetResp inListPassiveTargetResp) throws IOException
 	{
@@ -81,22 +89,16 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 		}
 	}
 	
-	private int getUserId(InListPassiveTargetResp inListPassiveTargetResp) throws IOException 
+	public String getUserId() throws IOException 
 	{
 		DataExchangeResp resp;
-		String dataIn;
 		
 		byte[] dataOut = SWProtocol.getUserIDCommand();
 		resp = sendMessage(new DataExchangeReq(inListPassiveTargetResp.getTargetId(), false, dataOut, 0,
 				dataOut.length));
 		
-		dataIn = new String(resp.getDataOut());		
-		
-		return 0;
-	}
-	
-	
-	
+		return new String(resp.getDataOut());
+	}	
 	
 	private void exchangeData(InListPassiveTargetResp inListPassiveTargetResp) throws IOException {
 		DataExchangeResp resp;

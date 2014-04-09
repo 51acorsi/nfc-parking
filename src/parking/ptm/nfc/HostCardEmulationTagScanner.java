@@ -11,41 +11,40 @@ import org.nfctools.spi.acs.ApduTagReaderWriter;
 
 public class HostCardEmulationTagScanner extends AbstractTerminalTagScanner {
 
+	private IsoDepTamaCommunicator tamaCommunicator;
+	private boolean interrupted = false;
+
 	public HostCardEmulationTagScanner(CardTerminal cardTerminal) {
 		super(cardTerminal);
 	}
 
 	@Override
 	public void run() {
-		while (!Thread.interrupted()) {
-			notifyStatus(TerminalStatus.WAITING);
+		notifyStatus(TerminalStatus.WAITING);
+		try {
+			Card card = cardTerminal.connect("direct");
+			ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP, null, card));
+			
 			try {
-				Card card = cardTerminal.connect("direct");
-				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP,
-						null, card));
+				this.tamaCommunicator = new IsoDepTamaCommunicator(readerWriter, readerWriter);
+				this.tamaCommunicator.connectAsInitiator();
+			} catch (Exception e1) {
+				card.disconnect(true);
+				e1.printStackTrace();
 				try {
-					IsoDepTamaCommunicator tamaCommunicator = new IsoDepTamaCommunicator(readerWriter, readerWriter);
-					tamaCommunicator.connectAsInitiator();
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
-				catch (Exception e1) {
-					card.disconnect(true);
-					e1.printStackTrace();
-					try {
-						Thread.sleep(1000);
-					}
-					catch (InterruptedException e) {
-						break;
-					}
-				}
-				finally {
-					waitForCardAbsent();
-					card.disconnect(true);
-				}
+			} finally {
+				card.disconnect(true);
 			}
-			catch (CardException e) {
-				e.printStackTrace();
-				break;
-			}
+		} catch (CardException e) {
+			e.printStackTrace();
 		}
+	}
+
+	public void stop() {
+		this.tamaCommunicator.stop();
 	}
 }
