@@ -1,20 +1,28 @@
-<?xml version='1.0' encoding='utf-8'?> <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd"> 
+<?xml version="1.0" encoding="utf-8"?> <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<!-- <?xml version='1.0' encoding='utf-8'?> <!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd"> -->
 
 <hibernate-configuration>  
-  
-    <session-factory>  
-  
-        <!-- Database connection settings -->  
-        <property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>  
-        <property name="connection.url">jdbc:sqlserver://localhost:1433;database=UserInfo</property>  
-        <property name="connection.username">sa</property>  
-        <property name="connection.password"></property>  
+  <session-factory>
+
+        <!-- Database connection settings -->
+<!--         <property name="connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property> -->
+<!--         <property name="connection.url">jdbc4:sqlserver://ft-home-note-01\\SQLEXPRESS;databaseName=ParkingDB;integratedSecurity=true;</property> -->
+<!--         jdbc4:sqlserver:ft-home-note-01\SQLEXPRESS;databaseName=ParkingDB;instanceName=SQLEXPRESS;</property> -->
+<!--         <property name="connection.url">C:\Users\Felipe\Desktop\parkingDB.sdf</property> -->
+
+        <property name="hibernate.connection.driver_class">org.postgresql.Driver</property>
+        <property name="hibernate.connection.url">jdbc:postgresql://localhost:5433/ParkingDB</property>
+
+
+        <property name="connection.username">postgres</property>  
+        <property name="connection.password">admin</property>  
   
         <!-- JDBC connection pool (use the built-in) -->  
         <property name="connection.pool_size">1</property>  
   
-        <!-- SQL dialect -->  
-        <property name="dialect">org.hibernate.dialect.SQLServer2005Dialect</property>  
+        <!-- SQL dialect -->
+        <property name="dialect">org.hibernate.dialect.PostgreSQLDialect</property>  
+<!--         <property name="dialect">org.hibernate.dialect.SQLServer2008Dialect</property> -->
   
         <!-- Echo all executed SQL to stdout -->  
         <property name="show_sql">true</property>  
@@ -22,8 +30,10 @@
         <!-- Drop and re-create the database schema on startup -->  
         <property name="hbm2ddl.auto">create</property>  
   
-        <mapping class="org.arpit.javapostsforlearning.User"></mapping>  
+  		<property name="show_sql">true</property>
   
-    </session-factory>  
-  
+        <mapping class="parking.db.User"></mapping>    
+    
+  </session-factory>
 </hibernate-configuration>
+  
