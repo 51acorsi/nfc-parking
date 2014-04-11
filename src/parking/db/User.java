@@ -1,22 +1,24 @@
 package parking.db;
 
-import static javax.persistence.GenerationType.SEQUENCE;
 import javax.persistence.Column;  
 import javax.persistence.Entity;  
 import javax.persistence.GeneratedValue;  
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 
-@Entity(name="User")
+import org.hibernate.annotations.GenericGenerator;
+
+@Entity(name="User_")
 public class User {
 	
 	@Id
-	@GeneratedValue(strategy = SEQUENCE, generator = "seq_user")
-	@SequenceGenerator(name="seq_user", sequenceName="seq_user")
-	private Long id;
-	
-	@Column(name="User_Id")  
-	private String userId;
+	//@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(generator="UUIDGenerator")
+    @GenericGenerator(name="UUIDGenerator", strategy="parking.db.UUIDGenerator")
+	@Column(name = "id", columnDefinition = "char(36)")
+	private String id;
 	
 	@Column(name="Name")
 	private String name;
@@ -27,6 +29,11 @@ public class User {
 
 	public void setName(String name) {
 		this.name = name;
-	}	
+	}
 
+	public User(String name)
+	{
+		this.name = name;
+	}
+	
 }
