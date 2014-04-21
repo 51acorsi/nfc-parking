@@ -32,7 +32,10 @@
   
   		<property name="show_sql">true</property>
   
-        <mapping class="parking.db.User"></mapping>    
+        <mapping class="parking.db.User"></mapping>
+        <mapping class="parking.db.Entry"></mapping>
+        <mapping class="parking.db.TicketEntry"></mapping>
+        <mapping class="parking.db.UserEntry"></mapping>
     
   </session-factory>
 </hibernate-configuration>

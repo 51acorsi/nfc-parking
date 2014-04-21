@@ -4,6 +4,8 @@ import javax.smartcardio.CardTerminal;
 
 import org.nfctools.spi.acs.AbstractTerminalTagScanner;
 
+import parking.db.User;
+
 public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 
 	protected BoomGate boomGate;
@@ -23,6 +25,14 @@ public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 	
 	public abstract void initialize ();
 	
-	public abstract void stop();
+	public abstract void stop();	
 	
+	//Events
+	public interface IOnUserEntry {
+		public void onUserEntry(ParkingTicketMachine ptm, User user);
+	}
+	
+	public interface IOnUserExit {
+		public void onUserExit(ParkingTicketMachine ptm, User user);
+	}	
 }

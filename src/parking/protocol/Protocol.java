@@ -5,7 +5,13 @@ import org.slf4j.LoggerFactory;
 import org.apache.commons.codec.binary.Hex;
 
 public abstract class Protocol implements IProtocol{
-
+	
+	public enum PaymentMethod
+	{
+		BY_ENTRY,
+		BY_HOUR;
+	}	
+	
 	private Logger log;
 	
 	public Protocol ()
