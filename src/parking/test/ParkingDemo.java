@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import parking.db.HibernateSession;
 import parking.db.User;
+import parking.db.UserEntry;
 import parking.ptm.EntryPTM;
 import parking.ptm.ExitPTM;
 import parking.ptm.ParkingTicketMachine;
@@ -18,7 +19,7 @@ import parking.ptm.ParkingTicketMachine.PTMMode;
 public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 
 	private List<ParkingTicketMachine> ticketMachineList = new ArrayList<ParkingTicketMachine>();
-	private User userEntered;
+	private UserEntry userEntry;
 	private Logger log = LoggerFactory.getLogger(getClass());
 	
 	public static void main(String[] args) {
@@ -127,9 +128,9 @@ public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 	}
 
 	@Override
-	public void onUserEntry(ParkingTicketMachine ptm, User user) {
-		log.info("User" + user.getUserName() + "logged");
-		userEntered = user;
+	public void onUserEntry(ParkingTicketMachine ptm, UserEntry uEntry) {
+		log.info("User" + uEntry.getUser().getUserName() + "logged");
+		userEntry = uEntry;
 		
 		//Stop Entry PTMs
 		this.stopTicketMachines();
