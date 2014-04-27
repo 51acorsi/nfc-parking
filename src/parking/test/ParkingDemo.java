@@ -85,6 +85,11 @@ public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 				((EntryPTM)ptm).addEventListener(this);
 			}
 			
+			if (ptm instanceof ExitPTM)
+			{
+				((ExitPTM)ptm).addEventListener(this);
+			}
+			
 			Thread t = new Thread(ptm);
 			t.start();
 		}
@@ -129,7 +134,7 @@ public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 
 	@Override
 	public void onUserEntry(ParkingTicketMachine ptm, UserEntry uEntry) {
-		log.info("User" + uEntry.getUser().getUserName() + "logged");
+		log.info("User " + uEntry.getUser().getUserName() + " logged");
 		userEntry = uEntry;
 		
 		//Stop Entry PTMs
@@ -142,8 +147,17 @@ public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 	}
 	
 	@Override
-	public void onUserExit(ParkingTicketMachine ptm, User user) {
+	public void onUserExit(ParkingTicketMachine ptm, UserEntry uEntry) {
+		log.info("User " + uEntry.getUser().getUserName() + " paid");
+		userEntry = null;
 		
+		//Stop Exit PTMs
+		this.stopTicketMachines();
+		this.removePTMS();
+		
+		//Create new Entry PTM
+		createEntryPTM();
+		this.initializeTicketMachines();		
 	}
 	
 	@Override
