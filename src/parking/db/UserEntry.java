@@ -50,6 +50,23 @@ public class UserEntry extends Entry {
 		return uEntry;
 	}
 	
+	//Updates
+	public static UserEntry updatePaidUserEntry(UserEntry uEntry) {
+
+		uEntry.setExitTime(new Date());
+		uEntry.setStatus(EntryStatus.COMPLETED);
+		
+		HibernateSession.getSession().beginTransaction();
+
+		uEntry = (UserEntry) HibernateSession.getSession().merge(uEntry);
+		HibernateSession.getSession().saveOrUpdate(uEntry);		
+
+		HibernateSession.getSession().getTransaction().commit();
+		HibernateSession.getSession().close();
+		
+		return uEntry;
+	}
+	
 	//Queries
 	public static UserEntry findUserEntry(User user, EntryStatus status) {
 		try {

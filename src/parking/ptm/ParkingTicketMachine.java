@@ -30,10 +30,10 @@ public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 	
 	//Events
 	public interface IOnUserEntry {
-		public void onUserEntry(ParkingTicketMachine ptm, UserEntry ue);
+		public void onUserEntry(ParkingTicketMachine ptm, UserEntry uEntry);
 	}
 	
 	public interface IOnUserExit {
-		public void onUserExit(ParkingTicketMachine ptm, User user);
+		public void onUserExit(ParkingTicketMachine ptm, UserEntry uEntry);
 	}	
 }

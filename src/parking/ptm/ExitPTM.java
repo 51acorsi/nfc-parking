@@ -20,6 +20,7 @@ import parking.db.User;
 import parking.db.UserEntry;
 import parking.exception.UserEntryNotRegistered;
 import parking.exception.UserIdNotFound;
+import parking.ptm.ParkingTicketMachine.IOnUserEntry;
 import parking.ptm.nfc.AcsDirectChannelTag;
 import parking.ptm.nfc.IsoDepTamaCommunicator;
 
@@ -63,7 +64,14 @@ public class ExitPTM extends ParkingTicketMachine {
 					log.info("User authenticated");
 					
 					//RequestPayment
-					//this.tamaCommunicator.checkPayment(uEntry.get);
+					log.info("Requenting Payment");
+					this.tamaCommunicator.requestPayment(uEntry);
+					log.info("Entry Paid");
+					
+					//Registered Paid Entry
+					log.info("Updating Paid Entry");
+					this.updatePaidEntry(uEntry);
+					log.info("Entry Updated");
 
 					// Open Boom Gate
 					this.boomGate.open();
@@ -73,8 +81,8 @@ public class ExitPTM extends ParkingTicketMachine {
 					// Close Boom Gate
 					this.boomGate.close();
 
-					// Register User
-					this.registerUser(uEntry.getUser());
+					// Notify User Entry Exit
+					this.notifyUserExit(uEntry);
 
 				} catch (Exception e1) {
 					card.disconnect(true);
@@ -112,12 +120,16 @@ public class ExitPTM extends ParkingTicketMachine {
 		return uEntry;
 	}
 
-	private void registerUser(User user) {
+	private void updatePaidEntry(UserEntry uEntry) {
+		UserEntry.updatePaidUserEntry(uEntry);
+	}
+	
+	private void notifyUserExit(UserEntry uEntry) {
 		List<IOnUserExit> callListeners = new ArrayList<IOnUserExit>(
 				onUserExitListeners);
 
 		for (Object listener : callListeners) {
-			((IOnUserExit) listener).onUserExit(this, user);
+			((IOnUserExit) listener).onUserExit(this, uEntry);
 		}
 	}
 

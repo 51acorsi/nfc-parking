@@ -108,6 +108,24 @@ public class IsoDepTamaCommunicator extends AbstractTamaCommunicator {
 			// TODO Error Handling
 		}
 	}
+	
+	public void requestPayment(UserEntry ue) throws IOException {
+
+		DataExchangeResp resp;
+
+//		byte[] dataOut = Protocol.getSetNewRegistryCommand(ParkingTerminal.getParkingId(),
+//				ParkingTerminal.getParkingName(), ue.getEntryId(), ue.getEntryTime(),
+//				ParkingTerminal.getPaymentMethod(), ParkingTerminal.getParkingFee());
+		
+		byte[] dataOut = Protocol.getReqPaymentCommand(ParkingTerminal.getParkingId(), ue.getEntryId());
+		resp = sendMessage(new DataExchangeReq(inListPassiveTargetResp.getTargetId(), false, dataOut, 0, dataOut.length));
+
+		// Check response
+		if (Protocol.checkConfirmMessage(resp.getDataOut()) == false)
+		{
+			// TODO Error Handling
+		}
+	}
 
 	private void exchangeData(InListPassiveTargetResp inListPassiveTargetResp) throws IOException {
 		DataExchangeResp resp;
