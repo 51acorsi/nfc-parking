@@ -36,8 +36,8 @@ public class UserEntry extends Entry {
 		this.user = user;
 	}
 	
-	//Queries
-	public static void registerUserEntry(User user) {
+	//Inserts
+	public static UserEntry registerUserEntry(User user) {
 		UserEntry uEntry = new UserEntry(new Date(), user);
 
 		HibernateSession.getSession().beginTransaction();
@@ -46,8 +46,11 @@ public class UserEntry extends Entry {
 
 		HibernateSession.getSession().getTransaction().commit();
 		HibernateSession.getSession().close();
+		
+		return uEntry;
 	}
-
+	
+	//Queries
 	public static UserEntry findUserEntry(User user, EntryStatus status) {
 		try {
 			Criteria criteria = HibernateSession.getSession().createCriteria(UserEntry.class);

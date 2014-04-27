@@ -19,5 +19,6 @@
 	<classpathentry kind="lib" path="jars/barbecue-1.5-beta1.jar"/>
 	<classpathentry kind="lib" path="jars/jdom.jar"/>
 	<classpathentry kind="lib" path="jars/postgresql-9.3-1101.jdbc3.jar"/>
+	<classpathentry kind="lib" path="jars/commons-lang3-3.3.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -47,6 +47,11 @@ public class Entry {
 		this.entryTime = entryTime;
 	}
 
+	public int getEntryId ()
+	{
+		return this.id;
+	}
+	
 	public EntryStatus getStatus() {
 		return status;
 	}

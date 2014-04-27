@@ -43,26 +43,31 @@ public class EntryPTM extends ParkingTicketMachine {
 			notifyStatus(TerminalStatus.WAITING);
 			try {
 				Card card = cardTerminal.connect("direct");
-				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(
-						new AcsDirectChannelTag(TagType.ISO_DEP, null, card));
+				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP,
+						null, card));
 
 				try {
-					this.tamaCommunicator = new IsoDepTamaCommunicator(
-							readerWriter, readerWriter);
+					this.tamaCommunicator = new IsoDepTamaCommunicator(readerWriter, readerWriter);
 
 					// Connect reader as initiator
 					log.info("Connecting reader as initiator");
 					this.tamaCommunicator.connectAsInitiator();
-
+					
 					// Authenticate User Id
 					log.info("Authenticating User");
-					User user = this.authUserID(this.tamaCommunicator
-							.getUserId());
+					User user = this.authUserID(this.tamaCommunicator.getUserId());
 					log.info("User authenticated");
 
-					//
-					
-					
+					// Register User Entry in SW
+					log.info("Registering UserEntry in SW");
+					UserEntry ue = this.registerUserEntry(user);
+					log.info("User Entry Registered");
+
+					// Register User Entry in APP
+					log.info("Registering UserEntry in APP");
+					this.tamaCommunicator.addEntryRegister(ue);
+					log.info("UserEntry registered in APP");
+
 					// Open Boom Gate
 					this.boomGate.open();
 
@@ -71,8 +76,8 @@ public class EntryPTM extends ParkingTicketMachine {
 					// Close Boom Gate
 					this.boomGate.close();
 
-					// Register User
-					this.registerUser(user);
+					// Notify User Entry
+					this.notifyUserEntry(ue);
 
 				} catch (Exception e1) {
 					card.disconnect(true);
@@ -118,17 +123,16 @@ public class EntryPTM extends ParkingTicketMachine {
 		return user;
 	}
 
-	private void registerUser(User user) {
-		UserEntry.registerUserEntry(user);
-		this.notifyUserEntry(user);
+	private UserEntry registerUserEntry(User user) {
+		// Register Parking Entry in SW
+		return UserEntry.registerUserEntry(user);
 	}
 
-	private void notifyUserEntry(User user) {
-		List<IOnUserEntry> callListeners = new ArrayList<IOnUserEntry>(
-				onUserEntryListeners);
+	private void notifyUserEntry(UserEntry ue) {
+		List<IOnUserEntry> callListeners = new ArrayList<IOnUserEntry>(onUserEntryListeners);
 
 		for (Object listener : callListeners) {
-			((IOnUserEntry) listener).onUserEntry(this, user);
+			((IOnUserEntry) listener).onUserEntry(this, ue);
 		}
 	}
 
