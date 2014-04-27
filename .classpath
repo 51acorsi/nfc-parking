@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/nfctools-examples"/>
 	<classpathentry kind="lib" path="jars/commons-codec-1.9.jar"/>
 	<classpathentry kind="lib" path="jars/slf4j-api-1.7.6.jar"/>
 	<classpathentry kind="lib" path="jars/slf4j-simple-1.7.6.jar"/>
@@ -20,5 +19,6 @@
 	<classpathentry kind="lib" path="jars/jdom.jar"/>
 	<classpathentry kind="lib" path="jars/postgresql-9.3-1101.jdbc3.jar"/>
 	<classpathentry kind="lib" path="jars/commons-lang3-3.3.2.jar"/>
+	<classpathentry kind="lib" path="jars/nfctools-examples.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
