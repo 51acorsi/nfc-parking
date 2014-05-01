@@ -24,7 +24,7 @@ public class EntryPTM extends ParkingTicketMachine {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IsoDepTamaCommunicator tamaCommunicator;
-	private List<IOnUserEntry> onUserEntryListeners = new ArrayList<IOnUserEntry>();
+//	private List<IEntryPTMEvents> onUserEntryListeners = new ArrayList<IEntryPTMEvents>();
 
 	// private HostCardEmulationTagScanner tagScanner;
 
@@ -69,12 +69,12 @@ public class EntryPTM extends ParkingTicketMachine {
 					log.info("UserEntry registered in APP");
 
 					// Open Boom Gate
-					this.boomGate.open();
+					this.openGate();
 
 					Thread.sleep(1500);
 
 					// Close Boom Gate
-					this.boomGate.close();
+					this.closeGate();
 
 					// Notify User Entry
 					this.notifyUserEntry(ue);
@@ -96,14 +96,15 @@ public class EntryPTM extends ParkingTicketMachine {
 		}
 	}
 
-	// Events
-	public synchronized void addEventListener(IOnUserEntry listener) {
-		onUserEntryListeners.add(listener);
-	}
 
-	public synchronized void removeEventListener(IOnUserEntry listener) {
-		onUserEntryListeners.remove(listener);
-	}
+//	// Events
+//	public synchronized void addEventListener(IEntryPTMEvents listener) {
+//		onUserEntryListeners.add(listener);
+//	}
+//
+//	public synchronized void removeEventListener(IEntryPTMEvents listener) {
+//		onUserEntryListeners.remove(listener);
+//	}
 
 	private User authUserID(String uId) throws IOException {
 		// Check if user exists in DB
@@ -129,10 +130,10 @@ public class EntryPTM extends ParkingTicketMachine {
 	}
 
 	private void notifyUserEntry(UserEntry ue) {
-		List<IOnUserEntry> callListeners = new ArrayList<IOnUserEntry>(onUserEntryListeners);
+		List<IPTMEvents> callListeners = new ArrayList<IPTMEvents>(this.onPTMListeners);
 
 		for (Object listener : callListeners) {
-			((IOnUserEntry) listener).onUserEntry(this, ue);
+			((IEntryPTMEvents) listener).onUserEntry(this, ue);
 		}
 	}
 
