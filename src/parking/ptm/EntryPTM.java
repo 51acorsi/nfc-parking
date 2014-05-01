@@ -3,9 +3,11 @@ package parking.ptm;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.smartcardio.Card;
 import javax.smartcardio.CardException;
 import javax.smartcardio.CardTerminal;
+
 import org.nfctools.api.TagType;
 import org.nfctools.scio.TerminalStatus;
 import org.nfctools.spi.acs.ApduTagReaderWriter;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import parking.db.Entry.EntryStatus;
 import parking.db.User;
 import parking.db.UserEntry;
+import parking.exception.ParkingException;
 import parking.exception.UserDoubleEntry;
 import parking.exception.UserIdNotFound;
 import parking.ptm.nfc.AcsDirectChannelTag;
@@ -24,7 +27,9 @@ public class EntryPTM extends ParkingTicketMachine {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IsoDepTamaCommunicator tamaCommunicator;
-//	private List<IEntryPTMEvents> onUserEntryListeners = new ArrayList<IEntryPTMEvents>();
+
+	// private List<IEntryPTMEvents> onUserEntryListeners = new
+	// ArrayList<IEntryPTMEvents>();
 
 	// private HostCardEmulationTagScanner tagScanner;
 
@@ -43,8 +48,7 @@ public class EntryPTM extends ParkingTicketMachine {
 			notifyStatus(TerminalStatus.WAITING);
 			try {
 				Card card = cardTerminal.connect("direct");
-				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP,
-						null, card));
+				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP, null, card));
 
 				try {
 					this.tamaCommunicator = new IsoDepTamaCommunicator(readerWriter, readerWriter);
@@ -52,7 +56,7 @@ public class EntryPTM extends ParkingTicketMachine {
 					// Connect reader as initiator
 					log.info("Connecting reader as initiator");
 					this.tamaCommunicator.connectAsInitiator();
-					
+
 					// Authenticate User Id
 					log.info("Authenticating User");
 					User user = this.authUserID(this.tamaCommunicator.getUserId());
@@ -68,6 +72,8 @@ public class EntryPTM extends ParkingTicketMachine {
 					this.tamaCommunicator.addEntryRegister(ue);
 					log.info("UserEntry registered in APP");
 
+					notifyTerminalMessage("Welcome " + user.getName(), PTMMsgType.INFO);
+
 					// Open Boom Gate
 					this.openGate();
 
@@ -79,6 +85,10 @@ public class EntryPTM extends ParkingTicketMachine {
 					// Notify User Entry
 					this.notifyUserEntry(ue);
 
+				}
+
+				catch (ParkingException pe) {
+					notifyTerminalMessage(pe.getMessage(), PTMMsgType.ERROR);
 				} catch (Exception e1) {
 					card.disconnect(true);
 					e1.printStackTrace();
@@ -96,29 +106,28 @@ public class EntryPTM extends ParkingTicketMachine {
 		}
 	}
 
-
-//	// Events
-//	public synchronized void addEventListener(IEntryPTMEvents listener) {
-//		onUserEntryListeners.add(listener);
-//	}
-//
-//	public synchronized void removeEventListener(IEntryPTMEvents listener) {
-//		onUserEntryListeners.remove(listener);
-//	}
+	// // Events
+	// public synchronized void addEventListener(IEntryPTMEvents listener) {
+	// onUserEntryListeners.add(listener);
+	// }
+	//
+	// public synchronized void removeEventListener(IEntryPTMEvents listener) {
+	// onUserEntryListeners.remove(listener);
+	// }
 
 	private User authUserID(String uId) throws IOException {
 		// Check if user exists in DB
 		User user = User.findUserbyUserName(uId);
 
 		if (user == null) {
-			throw new UserIdNotFound("Authentication not received");
+			throw new UserIdNotFound(String.format("User %s not registered", uId));
 		}
 
 		// Check double entry
 		UserEntry ue = UserEntry.findUserEntry(user, EntryStatus.ENTERED);
 
 		if (ue != null) {
-			throw new UserDoubleEntry("Double entry not allowed");
+			throw new UserDoubleEntry(String.format("User %s already registered\nDouble entry not allowed", ue.getUser().getName()));
 		}
 
 		return user;

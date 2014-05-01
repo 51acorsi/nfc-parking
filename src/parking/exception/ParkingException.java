@@ -1,13 +1,16 @@
 package parking.exception;
 
-public class UserEntryNotRegistered extends ParkingException {
+import java.io.IOException;
+
+public class ParkingException extends IOException {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	public UserEntryNotRegistered(String msg) {
+	public ParkingException (String msg)
+	{
 		super(msg);
 	}
 

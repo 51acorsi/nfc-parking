@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import parking.db.Entry.EntryStatus;
 import parking.db.User;
 import parking.db.UserEntry;
+import parking.exception.ParkingException;
 import parking.exception.UserEntryNotRegistered;
 import parking.exception.UserIdNotFound;
 import parking.ptm.nfc.AcsDirectChannelTag;
@@ -71,6 +72,8 @@ public class ExitPTM extends ParkingTicketMachine {
 					this.updatePaidEntry(uEntry);
 					log.info("Entry Updated");
 
+					notifyTerminalMessage("Goodbye " + uEntry.getUser().getName(), PTMMsgType.INFO);
+
 					// Open Boom Gate
 					this.openGate();
 
@@ -82,6 +85,8 @@ public class ExitPTM extends ParkingTicketMachine {
 					// Notify User Entry Exit
 					this.notifyUserExit(uEntry);
 
+				} catch (ParkingException pe) {
+					notifyTerminalMessage(pe.getMessage(), PTMMsgType.ERROR);
 				} catch (Exception e1) {
 					card.disconnect(true);
 					e1.printStackTrace();
@@ -111,7 +116,7 @@ public class ExitPTM extends ParkingTicketMachine {
 		UserEntry uEntry = UserEntry.findUserEntry(user, EntryStatus.ENTERED);
 
 		if (uEntry == null) {
-			throw new UserEntryNotRegistered("User " + uId + " entry not registered");
+			throw new UserEntryNotRegistered(String.format("User %s entry not registered\nExit not Allowed", uId));
 		}
 
 		return uEntry;
