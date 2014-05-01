@@ -12,7 +12,7 @@ import parking.protocol.Protocol.PaymentMethod;
 public class ParkingTerminal {
 	
 	private static int parkingId = 1;
-	private static String parkingName = "Test-a-Parking";
+	private static String parkingName = "Parking Test";
 	private static PaymentMethod paymentMethod = PaymentMethod.BY_ENTRY;
 	private static float parkingFee = 5;
 

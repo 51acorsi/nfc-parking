@@ -1,8 +1,6 @@
 package parking.exception;
 
-import java.io.IOException;
-
-public class UserIdNotFound extends IOException {
+public class UserIdNotFound extends ParkingException {
 
 	/**
 	 * 

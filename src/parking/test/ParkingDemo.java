@@ -18,6 +18,7 @@ import parking.ptm.ParkingTicketMachine;
 import parking.ptm.ParkingTicketMachine.IEntryPTMEvents;
 import parking.ptm.ParkingTicketMachine.IExitPTMEvents;
 import parking.ptm.ParkingTicketMachine.PTMMode;
+import parking.ptm.ParkingTicketMachine.PTMMsgType;
 
 public class ParkingDemo implements IEntryPTMEvents, IExitPTMEvents{
 
@@ -179,5 +180,11 @@ public class ParkingDemo implements IEntryPTMEvents, IExitPTMEvents{
 	@Override
 	public void onBoomGateClosed(ParkingTicketMachine ptm) {
 		//No Action
+	}
+
+	@Override
+	public void onTerminalMessage(ParkingTicketMachine PTM, String msg, PTMMsgType msgType) {
+		// TODO Auto-generated method stub
+		
 	}
 }

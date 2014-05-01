@@ -21,6 +21,12 @@ public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 		 EXIT
 		}
 	
+	public enum PTMMsgType
+	{
+		INFO,
+		ERROR
+	}
+	
 	public ParkingTicketMachine (CardTerminal cardTerminal)
 	{
 		super(cardTerminal);		
@@ -51,6 +57,15 @@ public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 		this.notifyGateClosed();
 	}
 	
+	protected void notifyTerminalMessage(String msg, PTMMsgType msgType)
+	{
+		List<IPTMEvents> callListeners = new ArrayList<IPTMEvents>(onPTMListeners);
+
+		for (Object listener : callListeners) {
+			((IPTMEvents) listener).onTerminalMessage(this, msg, msgType);
+		}
+	}
+	
 	protected void notifyGateOpened() {
 		List<IPTMEvents> callListeners = new ArrayList<IPTMEvents>(onPTMListeners);
 
@@ -71,6 +86,7 @@ public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 	public interface IPTMEvents{
 		public void onBoomGateOpened(ParkingTicketMachine ptm);
 		public void onBoomGateClosed(ParkingTicketMachine ptm);
+		public void onTerminalMessage(ParkingTicketMachine PTM, String msg, PTMMsgType msgType);
 	}
 	
 	public interface IEntryPTMEvents extends IPTMEvents {
@@ -79,5 +95,5 @@ public abstract class ParkingTicketMachine extends AbstractTerminalTagScanner{
 	
 	public interface IExitPTMEvents extends IPTMEvents{
 		public void onUserExit(ParkingTicketMachine ptm, UserEntry uEntry);
-	}	
+	}
 }

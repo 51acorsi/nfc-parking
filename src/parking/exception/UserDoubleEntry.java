@@ -1,8 +1,6 @@
 package parking.exception;
 
-import java.io.IOException;
-
-public class UserDoubleEntry extends IOException {
+public class UserDoubleEntry extends ParkingException {
 
 	/**
 	 * 
