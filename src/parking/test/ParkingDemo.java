@@ -2,21 +2,24 @@ package parking.test;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javax.smartcardio.CardTerminal;
+
 import org.nfctools.examples.TerminalUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import parking.db.HibernateSession;
 import parking.db.User;
 import parking.db.UserEntry;
 import parking.ptm.EntryPTM;
 import parking.ptm.ExitPTM;
 import parking.ptm.ParkingTicketMachine;
-import parking.ptm.ParkingTicketMachine.IOnUserEntry;
-import parking.ptm.ParkingTicketMachine.IOnUserExit;
+import parking.ptm.ParkingTicketMachine.IEntryPTMEvents;
+import parking.ptm.ParkingTicketMachine.IExitPTMEvents;
 import parking.ptm.ParkingTicketMachine.PTMMode;
 
-public class ParkingDemo implements IOnUserEntry, IOnUserExit{
+public class ParkingDemo implements IEntryPTMEvents, IExitPTMEvents{
 
 	private List<ParkingTicketMachine> ticketMachineList = new ArrayList<ParkingTicketMachine>();
 	private UserEntry userEntry;
@@ -82,13 +85,15 @@ public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 			
 			if (ptm instanceof EntryPTM)
 			{
-				((EntryPTM)ptm).addEventListener(this);
+				//((EntryPTM)ptm).addEventListener(this);
 			}
 			
 			if (ptm instanceof ExitPTM)
 			{
-				((ExitPTM)ptm).addEventListener(this);
+				//((ExitPTM)ptm).addEventListener(this);
 			}
+			
+			ptm.addEventListener(this);
 			
 			Thread t = new Thread(ptm);
 			t.start();
@@ -164,5 +169,15 @@ public class ParkingDemo implements IOnUserEntry, IOnUserExit{
 	protected void finalize() throws Throwable {
 		super.finalize();
 		HibernateSession.close();
+	}
+
+	@Override
+	public void onBoomGateOpened(ParkingTicketMachine ptm) {
+		//No Action
+	}
+
+	@Override
+	public void onBoomGateClosed(ParkingTicketMachine ptm) {
+		//No Action
 	}
 }

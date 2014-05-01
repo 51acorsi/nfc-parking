@@ -15,12 +15,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import parking.db.Entry.EntryStatus;
-import parking.db.ParkingTerminal;
 import parking.db.User;
 import parking.db.UserEntry;
 import parking.exception.UserEntryNotRegistered;
 import parking.exception.UserIdNotFound;
-import parking.ptm.ParkingTicketMachine.IOnUserEntry;
 import parking.ptm.nfc.AcsDirectChannelTag;
 import parking.ptm.nfc.IsoDepTamaCommunicator;
 
@@ -28,7 +26,9 @@ public class ExitPTM extends ParkingTicketMachine {
 
 	private Logger log = LoggerFactory.getLogger(getClass());
 	private IsoDepTamaCommunicator tamaCommunicator;
-	private List<IOnUserExit> onUserExitListeners = new ArrayList<IOnUserExit>();
+
+	// private List<IExitPTMEvents> onUserExitListeners = new
+	// ArrayList<IExitPTMEvents>();
 
 	// private HostCardEmulationTagScanner tagScanner;
 
@@ -47,12 +47,10 @@ public class ExitPTM extends ParkingTicketMachine {
 			notifyStatus(TerminalStatus.WAITING);
 			try {
 				Card card = cardTerminal.connect("direct");
-				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(
-						new AcsDirectChannelTag(TagType.ISO_DEP, null, card));
+				ApduTagReaderWriter readerWriter = new ApduTagReaderWriter(new AcsDirectChannelTag(TagType.ISO_DEP, null, card));
 
 				try {
-					this.tamaCommunicator = new IsoDepTamaCommunicator(
-							readerWriter, readerWriter);
+					this.tamaCommunicator = new IsoDepTamaCommunicator(readerWriter, readerWriter);
 
 					// Connect reader as initiator
 					log.info("Connecting reader as initiator");
@@ -62,24 +60,24 @@ public class ExitPTM extends ParkingTicketMachine {
 					log.info("Authenticating User");
 					UserEntry uEntry = this.authUserID(this.tamaCommunicator.getUserId());
 					log.info("User authenticated");
-					
-					//RequestPayment
+
+					// RequestPayment
 					log.info("Requenting Payment");
 					this.tamaCommunicator.requestPayment(uEntry);
 					log.info("Entry Paid");
-					
-					//Registered Paid Entry
+
+					// Registered Paid Entry
 					log.info("Updating Paid Entry");
 					this.updatePaidEntry(uEntry);
 					log.info("Entry Updated");
 
 					// Open Boom Gate
-					this.boomGate.open();
+					this.openGate();
 
 					Thread.sleep(1500);
 
 					// Close Boom Gate
-					this.boomGate.close();
+					this.closeGate();
 
 					// Notify User Entry Exit
 					this.notifyUserExit(uEntry);
@@ -113,8 +111,7 @@ public class ExitPTM extends ParkingTicketMachine {
 		UserEntry uEntry = UserEntry.findUserEntry(user, EntryStatus.ENTERED);
 
 		if (uEntry == null) {
-			throw new UserEntryNotRegistered("User " + uId
-					+ " entry not registered");
+			throw new UserEntryNotRegistered("User " + uId + " entry not registered");
 		}
 
 		return uEntry;
@@ -123,13 +120,12 @@ public class ExitPTM extends ParkingTicketMachine {
 	private void updatePaidEntry(UserEntry uEntry) {
 		UserEntry.updatePaidUserEntry(uEntry);
 	}
-	
+
 	private void notifyUserExit(UserEntry uEntry) {
-		List<IOnUserExit> callListeners = new ArrayList<IOnUserExit>(
-				onUserExitListeners);
+		List<IPTMEvents> callListeners = new ArrayList<IPTMEvents>(this.onPTMListeners);
 
 		for (Object listener : callListeners) {
-			((IOnUserExit) listener).onUserExit(this, uEntry);
+			((IExitPTMEvents) listener).onUserExit(this, uEntry);
 		}
 	}
 
@@ -138,14 +134,4 @@ public class ExitPTM extends ParkingTicketMachine {
 		this.interrupted = true;
 		this.tamaCommunicator.stop();
 	}
-
-	// Events
-	public synchronized void addEventListener(IOnUserExit listener) {
-		onUserExitListeners.add(listener);
-	}
-
-	public synchronized void removeEventListener(IOnUserExit listener) {
-		onUserExitListeners.remove(listener);
-	}
-	
 }
